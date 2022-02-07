@@ -12,6 +12,7 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var messageLabel: UILabel!
+    @IBOutlet weak var playSoundSwitch: UISwitch!
     
     var imageNumber = -1
     var messageNumber = -1
@@ -32,6 +33,27 @@ class ViewController: UIViewController {
         return newNumber
     }
     
+    func playSound(name: String) {
+        if let sound = NSDataAsset(name: name) {
+            do {
+                try audioPlayer = AVAudioPlayer(data: sound.data)
+                audioPlayer.play()
+                } catch {
+                    print("😡 ERROR: \(error.localizedDescription). Could not initialize AVAudioPlayer object")
+                        }
+                    } else {
+                        print("😡 ERROR: Could not read data from file \(name)")
+                    }
+                }
+    
+    @IBAction func playSoundToggled(_ sender: UISwitch) {
+        if !sender.isOn {
+            if audioPlayer != nil {
+                audioPlayer.stop()
+            }
+        }
+    }
+    
     @IBAction func messageButtonPressed(_ sender: UIButton) {
         let messages = ["You are awesome",
                         "You are great",
@@ -45,9 +67,12 @@ class ViewController: UIViewController {
         messageLabel.text = messages[messageNumber]
         
         imageNumber = nonRepeatingRandom(originalNumber: imageNumber, upperLimit: totalNumberOfImages-1)
-        imageView.image = UIImage(named: "image0")
+        imageView.image = UIImage(named: "image1")
         
         soundNumber = nonRepeatingRandom(originalNumber: soundNumber, upperLimit: totalNumberOfSounds-1)
+        if playSoundSwitch.isOn {
+            playSound(name: "sound0")
+        }
 //        var newMessageNumber: Int
 //        repeat {
 //            newMessageNumber = Int.random(in: 0...messages.count-1)
